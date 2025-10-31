@@ -1,0 +1,133 @@
+<!--
+#  Copyright (C) 2022-2025 Amruta Barbadikar & Amba Kulkarni (ambapradeep@gmail.com)
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later
+#  version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
+
+
+    <script src="../js_files/devtrans.js"></script>
+    <script language="Javascript" type="text/javascript">
+<!--      function check() {
+        var data=document.test.text.value;
+        if (data == "") {
+          alert("Please enter a Sloka");
+          return false;
+        }
+        else {
+          var inputlang=document.getElementById("encoding").value;
+          var noreg_wxe=/[^aAiIuUqQlLeEoOMHzkKgGfcCjJFtTdDNwWxXnpPbBmyrlvSRshZ \.\?\-\_\!\^\,\r\n]/;
+          var noreg_uni=/[^।॥अआइईउऊऋॠऌएऐओऔअंअःकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसह ्ािीुूृॄॢेैोौंः \-_\?\.,!\+\r\n]/;
+          var noreg_itr=/[^AaiuRiLIeoMH.Nkgh~NcChjnThDtdpbmyrlvsS \?\-\_\.\,\!\^\r\n]/;
+          var noreg_slp=/[^aAiIuUfFlxeEoOMHkKgGNcCqQjJwWQRtTdDnpPbBmyrlvSzsh \.\?\r\n\-]/;
+          var noreg_vel=/[^aiurleomhkgncjtdpbvysz \~\"\?\-\_\.\,\!\r\n]/;
+          var noreg_rom=/[^aÄiÄ«uÅ«á¹›?leoá¹ƒá¸¥khgá¹…cjÃ±á¹­á¸á¹‡tdnpbmyrlvÅ›á¹£s \.\?\r\n]/;
+          var noreg_kyo=/[^aAiIuUlReaoMHkghGcjJTDNtdnpbmyrlvzSs \.\?\r\n]/;
+          switch (inputlang) {
+            case "Unicode": if (!noreg_uni.test(data)) break;
+            case "Itrans" : if (!noreg_itr.test(data)) break;
+            case "SLP"    : if (!noreg_slp.test(data)) break;
+            case "roman"  : if (!noreg_rom.test(data)) break;
+            case "KH"     : if (!noreg_kyo.test(data)) break;
+            case "VH"     : if (!noreg_vel.test(data)) break;
+            case "WX"     : if (!noreg_wxe.test(data)) break;
+            default: {
+              alert("Please check encoding notation and input text notation"); return false;
+            }
+          }
+        }
+      } -->
+
+
+function livetrans () {
+  var codec = document.getElementById("encoding").value;
+  var itext = document.getElementById("text").value;
+  var otext = "";
+  if (codec == "WX") {
+    otext = slp2dev(wx2slp(itext));
+  }
+  else if (codec == "Itrans") {
+    otext = slp2dev(itrans2slp(itext));
+  }
+  else if (codec == "VH") {
+    otext = slp2dev(vel2slp(itext));
+  }
+  else if (codec == "SLP") {
+    otext = slp2dev(itext);
+  }
+  else if (codec == "KH") {
+    otext = slp2dev(hk2slp(itext));
+  }
+  else if (codec == "IAST") {
+    otext = slp2dev(iast2slp(itext));
+  }
+  document.getElementById("devtext").innerHTML = otext;
+}
+
+
+    </script>
+
+  <div id="input-dashboard">
+  <table border=0>
+  <center>
+  <tr>
+  <td class="input-dashboard-div1">
+
+  <div class="dept-name">
+    <span class="title" id="desc-morph">&nbsp;&nbsp;&nbsp;&nbsp;यमक-अनुप्रास (yamaka-anuspaasa-identifier)</span>
+  </div>
+
+      <form name="test" method="post" onsubmit="return callymkanu();">
+          <table>
+	   <center>
+            <tr> <td></td> <td></td> <td id="devtext"></td> <td></td> </tr>
+            <tr>
+              <td>
+                <a href='#' style="color:blue;" onclick="window.open('table.html','Details','width=800, height=500,scrollbars=yes');">Input Encoding</a>
+                <select name="encoding" id="encoding" onchange="livetrans()">
+                  <!--	    <option value="Unicode">Select encoding for Input</option> -->
+                  <option value="Unicode">Devanagari</option>
+                  <option value="WX">WX-Alphabetic</option>
+                  <option value="Itrans">Itrans-5.3</option>
+                  <option value="VH">Velthuis</option>
+                  <option value="SLP">SLP1</option>
+                  <option value="KH">Kyoto-Harvard(KH)</option>
+                  <option value="IAST">IAST(Roman-Diacritic)</option>
+                </select>
+              </td>
+              <td>
+                <a href='#' style="color:blue;" onclick="window.open('table.html','Details','width=800, height=500,scrollbars=yes');">Output Encoding</a>
+                <select name="out_encoding" id="out_encoding">
+                  <!--          <option>Select encoding for Output</option> -->
+                  <option value="Devanagari">Devanagari</option>
+                  <option value="IAST">IAST(Roman-Diacritic)</option>
+                </select>
+              </td>
+              <td>
+                <textarea name="text" style=" min-width:500px" rows="2" id="text" oninput="livetrans()" placeholder="Type the shloka"></textarea>
+              </td>
+              <td>
+                <center>
+                  <input value="submit" type="submit" id="submit-bttn" class="styled-button-3" />
+                </center>
+              </td>
+            </tr>
+       </center>
+       </table>
+      </form>
+     </center>
+    </table>
+   <div id="output"> </div>
+  </div> <!-- input-dashboard -->

@@ -1,0 +1,19 @@
+pip install sanskrit_parser
+pip install gensim sentencepiece
+
+pip install devtrans
+pip install indic_transliteration
+
+
+
+
+wsl --install
+wsl --list --verbose
+wsl --set-version Ubuntu-22.04 2
+
+
+sudo apt update docker.io
+sudo systemctl enable docker
+sudo systemctl status docker
+sudo systemctl start docker
+docker run --rm -d -p 80:80 --name samsaadhanii vipranarayan14/samsaadhanii

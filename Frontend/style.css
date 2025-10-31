@@ -1,0 +1,32 @@
+.data-item {
+  position: relative;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  width: fit-content;
+  cursor: pointer;
+  background: #f9f9f9;
+  border-radius: 5px;
+}
+
+/* Tooltip container, hidden by default */
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%; /* show above the div */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+  white-space: pre-wrap; /* keep JSON formatting */
+  z-index: 10;
+  width: max-content;
+  max-width: 300px;
+}
+
+/* Show tooltip on hover */
+.data-item:hover .tooltip {
+  display: block;
+}

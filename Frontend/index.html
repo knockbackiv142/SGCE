@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sanskrit Grammar Search</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff8f0;
+            color: #4b2e2e;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ffb347, #ffcc33);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #6b2e2e;
+            letter-spacing: 1px;
+            animation: headerGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes headerGlow {
+            0% {
+                text-shadow: 0 0 4px #fff1d6, 0 0 6px #ffb347;
+            }
+
+            100% {
+                text-shadow: 0 0 10px #fff1d6, 0 0 20px #ffb347;
+            }
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1rem;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            border: none;
+            background: #fff3e6;
+            box-shadow: 6px 6px 15px #e0c7b0, -6px -6px 15px #ffffff;
+            color: #4b2e2e;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder {
+            color: transparent;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 50%;
+            left: 1.5rem;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: #a36b3e;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus+label,
+        input:not(:placeholder-shown)+label {
+            top: -8px;
+            font-size: 0.85rem;
+            color: #d17f1b;
+            background: #fff8f0;
+            padding: 0 6px;
+            border-radius: 4px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: #8b2e2e;
+            color: #ffd27f;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 210, 127, 0.4);
+            display: block;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0);
+            transition: transform 0.5s, opacity 1s;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        button:active::after {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0.5;
+            transition: 0s;
+        }
+
+        button:hover {
+            background: #a53b3b;
+        }
+
+        .results {
+            margin-top: 2rem;
+            background: #fff3e6;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 6px 6px 15px #e0c7b0, -6px -6px 15px #ffffff;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            min-height: 180px;
+            color: #4b2e2e;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6b2e2e;
+            margin: 5px 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #ffe0b3;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            min-width: 180px;
+            max-width: 280px;
+            background-color: #fff1d6;
+            color: #6b2e2e;
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 0;
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #advOptions {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 0;
+            left: 75%;
+            width: 320px;
+            padding: 1.5rem;
+            background: #fff3e6;
+            border-radius: 20px;
+            box-shadow: 6px 6px 15px #e0c7b0, -6px -6px 15px #ffffff;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        #advOptions.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #advOptions label {
+            display: block;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #6b2e2e;
+        }
+
+        #advOptions select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #e0c7b0;
+            background: #fff3e6;
+            color: #4b2e2e;
+            font-size: 14px;
+        }
+
+        #advClose {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: transparent;
+            font-size: 1.3rem;
+            color: #6b2e2e;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #7a4b4b;
+            background: #fff8f0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Sanskrit Grammar Search</h1>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <form id="grammarForm" autocomplete="off">
+                <div class="input-group">
+                    <input type="text" id="query" name="query" placeholder=" " />
+                    <label>Enter Sanskrit word or phrase</label>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" id="sandhiBtn">Split Sandhi?</button>
+                    <button type="button" id="sendBtn">Analyze</button>
+                    <button type="button" id="advBtn">Advanced Options</button>
+                </div>
+
+                <div id="advOptions">
+                    <button type="button" id="advClose">×</button>
+                    <label>Input Encoding:
+                        <select id="inputEncoding">
+                            <option value="devanagari">Devanagari</option>
+                            <option value="slp1">SLP1</option>
+                            <option value="iast">IAST</option>
+                        </select>
+                    </label>
+                    <label>Output Encoding:
+                        <select id="outputEncoding">
+                            <option value="devanagari">Devanagari</option>
+                            <option value="slp1">SLP1</option>
+                            <option value="iast">IAST</option>
+                        </select>
+                    </label>
+                    <label>Text Type:
+                        <select id="textType">
+                            <option value="prose">Prose</option>
+                            <option value="sloka">Sloka</option>
+                            <option value="vedic">Vedic</option>
+                        </select>
+                    </label>
+                </div>
+            </form>
+
+            <div class="results" id="results"></div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 Sanskrit Grammar AI
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@sanskrit-coders/sanscript"></script>
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+
+    <script>
+        document.getElementById('sendBtn').addEventListener('click', fetchData);
+        document.getElementById("inputEncoding").addEventListener("change", convertAll);
+        document.getElementById("outputEncoding").addEventListener("change", convertAll);
+
+
+        document.getElementById('advBtn').addEventListener('click', () => {
+            document.getElementById('advOptions').classList.toggle('show');
+            document.getElementById('advOptions').style.display =
+                document.getElementById('advOptions').classList.contains('show') ? 'block' : 'none';
+        });
+
+        document.getElementById('advClose').addEventListener('click', () => {
+            document.getElementById('advOptions').classList.remove('show');
+            document.getElementById('advOptions').style.display = 'none';
+        });
+
+
+        let sandhiOption = false;
+        document.addEventListener('DOMContentLoaded', () => {
+            let sandhiBtn = document.getElementById('sandhiBtn');
+            sandhiBtn.addEventListener('click', (event) => {
+                event.preventDefault(); // stop form submission
+                if (sandhiBtn.style.backgroundColor == "red") {
+                    sandhiBtn.style.backgroundColor = "green";
+                    sandhiBtn.style.boxShadow = "0 4px 12px rgba(0, 128, 0, 0.7)";
+                    sandhiOption = true;
+
+                } else {
+                    sandhiBtn.style.backgroundColor = "red";
+                    sandhiBtn.style.boxShadow = "0 4px 12px rgba(255, 0, 0, 0.7)";
+                    sandhiOption = false;
+
+                }
+            });
+        });
+
+
+
+
+        async function fetchData() {
+            function graph(topGraph) {
+                const resultsDiv = document.getElementById('results');
+
+                // Clear any existing graph
+                let existingCy = document.getElementById('cy');
+                if (existingCy) existingCy.remove();
+
+                // Create new graph container
+                const cyDiv = document.createElement('div');
+                cyDiv.id = 'cy';
+                cyDiv.style.width = '100%';
+                cyDiv.style.height = '400px'; // adjust height as needed
+                cyDiv.style.marginTop = '20px';
+                cyDiv.style.borderRadius = '12px';
+                cyDiv.style.background = '#fff3e6';
+                cyDiv.style.boxShadow = '6px 6px 15px #e0c7b0, -6px -6px 15px #ffffff';
+                resultsDiv.appendChild(cyDiv);
+
+                let elements = [];
+                let nodeSet = new Set();
+
+                topGraph.forEach(entry => {
+                    // Nodes
+                    if (entry.node && !nodeSet.has(entry.node.pada)) {
+                        elements.push({ data: { id: entry.node.pada, label: entry.node.pada } });
+                        nodeSet.add(entry.node.pada);
+                    }
+                    if (entry.predecessor && !nodeSet.has(entry.predecessor.pada)) {
+                        elements.push({ data: { id: entry.predecessor.pada, label: entry.predecessor.pada } });
+                        nodeSet.add(entry.predecessor.pada);
+                    }
+                    // Edges
+                    if (entry.predecessor) {
+                        elements.push({
+                            data: {
+                                source: entry.predecessor.pada,
+                                target: entry.node.pada,
+                                label: entry.sambandha
+                            }
+                        });
+                    }
+                });
+
+                cytoscape({
+                    container: cyDiv,
+                    elements,
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                label: 'data(label)',
+                                'background-color': '#d17f1b',
+                                color: '#fff',
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'font-size': 10,
+                                'text-outline-color': '#b35900',
+                                'text-outline-width': 0.5,
+                                width: 40,
+                                height: 40
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                label: 'data(label)',
+                                'curve-style': 'bezier',
+                                'target-arrow-shape': 'triangle',
+                                'line-color': '#8b2e2e',
+                                'target-arrow-color': '#8b2e2e',
+                                'font-size': 8,
+                                'text-background-color': '#fff8f0',
+                                'text-background-opacity': 1,
+                                'width': 2
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        animate: true,
+                        padding: 20
+                    }
+                });
+            }
+
+
+            try {
+
+
+
+                event.preventDefault();
+                let queryInput = document.getElementById('query').value;
+                let inputEnc = document.getElementById("inputEncoding").value;
+                let outputEnc = document.getElementById("outputEncoding").value;
+
+                queryInput = Sanscript.t(queryInput, inputEnc, "devanagari"); // APIs expect Devanagari
+                let words = queryInput.replace(/[।.,!?]/g, "").split(" ");
+                let outputElement = document.getElementById('results');
+
+                //Graph Logic
+
+
+                outputElement.innerHTML = ""; // Clear previous results
+                newQueryInput = "";
+                if (sandhiOption == true) {
+
+                    for (i = 0; i < words.length; i++) {
+                        let word = words[i];
+                        let res = await fetch(`http://127.0.0.1:9000/sanskrit_parser/v1/splits/${word}`);
+                        let splitsData = await res.json();
+
+                        console.log(splitsData.splits[0])
+                        console.log(splitsData)
+                        if (!splitsData.splits || splitsData.splits.length === 0) {
+                            newQueryInput += word + " "
+                            await dosomething(word);
+                        }
+                        else {
+
+                            let firstSplit = splitsData.splits[0];
+                            newQueryInput += firstSplit + " ";
+                            for (const splitWord of firstSplit) {
+                                newSplitWord = splitWord.replace(/(.*?)स्(?=\s|$|[।,.!?])/g, (match, p1) => {
+                                    return p1 + "ः";
+                                });
+                                await dosomething(newSplitWord);
+                            }
+                        }
+                    }
+                    newQueryInput = newQueryInput.replace(/(.*?)स्(?=\s|$|[।,.!?])/g, (match, p1) => {
+                        return p1 + "ः";
+                    });
+                    console.log("NEW QUERY INPUT IS " + newQueryInput.replace(/,/g, ' '));
+
+
+
+                } else {
+                    newQueryInput = queryInput;
+                    console.log(newQueryInput)
+                    newQueryInput = newQueryInput.replace(/(.*?)स्(?=\s|$|[।,.!?])/g, (match, p1) => {
+                        return p1 + "ः";
+                    });
+                    newQueryInput = newQueryInput.split(" ")
+                    console.log(newQueryInput)
+                    for (let w of newQueryInput) {
+                        await dosomething(w);
+                    }
+                }
+
+
+                let meaningResponse = await fetch(`http://localhost:08/cgi-bin/scl/MT/anusaaraka.cgi?encoding=Unicode&out_encoding=Devanagari&splitter=None&parse=FULL&tlang=Hindi&text_type=Prose&compound_analysis=YES&mode=json&text=${newQueryInput}`);
+                console.log('fetching meaning for:', newQueryInput);
+
+
+
+                let meaningData = await meaningResponse.json();
+                console.log('Meaning data received:', meaningData);
+
+                let meaningText = "";
+                let meaningWords = (meaningData) => {
+                    for (let i in meaningData) {
+                        if (i === "hindi_meaning_active") {
+                            meaningText += meaningData[i].replace(/[,_-]/g, " ") + " ";
+                        }
+                        else if (typeof meaningData[i] === 'object' && meaningData[i] !== null) {
+                            meaningWords(meaningData[i]);
+                        }
+                    }
+                };
+
+                meaningWords(meaningData);
+                console.log(meaningText);
+
+
+                document.getElementById("results").appendChild(document.createElement("br"));
+                document.getElementById("results").appendChild(document.createElement("br"));
+
+                let graphHeading = document.createElement("strong");
+                graphHeading.textContent = "Graph: ";
+                graphHeading.style.fontSize = "28px";
+                document.getElementById("results").appendChild(graphHeading);
+
+                let cyDiv = document.createElement("div");
+                cyDiv.id = "cy";
+                cyDiv.style.width = "800px";
+                cyDiv.style.height = "600px";
+                outputElement.appendChild(cyDiv);
+
+
+
+
+                let graphRes = await fetch(
+                    `http://127.0.0.1:9000/sanskrit_parser/v1/parse-presegmented/${newQueryInput}`
+                );
+                let graphData = await graphRes.json();
+                console.log(graphData);
+
+                if (graphData.analysis && graphData.analysis.length > 0) {
+                    let topGraph = graphData.analysis[0].graph;
+                    graph(topGraph);   // ✅ call your defined function
+                    console.log("Top graph:", topGraph);
+                } else {
+                    console.error("No analysis found in response:", graphData);
+                }
+
+
+
+
+                let meaningHeading = document.createElement("strong");
+                meaningHeading.textContent = "Rough Meaning: ";
+                meaningHeading.style.fontSize = "28px";
+                document.getElementById("results").appendChild(meaningHeading);
+                document.getElementById("results").appendChild(document.createElement("br"));
+                document.getElementById("results").appendChild(document.createTextNode(meaningText.trim()));
+
+
+
+
+                async function dosomething(word) {
+                    let response = await fetch(`http://127.0.0.1:9000/sanskrit_parser/v1/tags/${word}`);
+                    console.log('Fetching data for:', word);
+                    if (!response.ok) {
+                        throw new Error('Could not fetch data');
+                    }
+
+                    let data = await response.json();
+                    console.log('Data received:', data);
+
+                    if (data.tags && data.tags.length > 0) {
+                        let firstItem = data.tags[0];
+                        let root = firstItem[0];
+                        let properties = firstItem[1];
+
+                        // Create tooltip container
+                        let tooltip = document.createElement("div");
+                        tooltip.className = "tooltip";
+
+                        // Root inside the div
+                        let rootDiv = document.createElement("div");
+                        let inputEnc = document.getElementById("inputEncoding").value;
+                        let outputEnc = document.getElementById("outputEncoding").value;
+                        rootDiv.textContent = Sanscript.t(word, inputEnc, outputEnc);
+                        rootDiv.style.fontSize = "24px";
+
+                        // Tooltip text div
+                        let tooltipText = document.createElement("div");
+                        tooltipText.className = "tooltiptext";
+
+                        // Root in tooltip
+                        let heading2 = document.createElement("strong");
+                        heading2.textContent = "Root: " + Sanscript.t(root, inputEnc, outputEnc);
+                        tooltipText.appendChild(heading2);
+                        tooltipText.appendChild(document.createElement("br"));
+                        tooltipText.appendChild(document.createElement("br"));
+
+                        // Properties
+                        let heading = document.createElement("strong");
+                        heading.textContent = "Properties:";
+                        tooltipText.appendChild(heading);
+
+                        let list = document.createElement("ul");
+                        list.style.margin = "6px 0";
+                        list.style.paddingLeft = "18px";
+                        properties.forEach(prop => {
+                            let li = document.createElement("li");
+                            li.textContent = Sanscript.t(prop, inputEnc, outputEnc);
+                            list.appendChild(li);
+                        });
+                        tooltipText.appendChild(list);
+
+                        tooltipText.appendChild(document.createElement("br"));
+                        tooltipText.appendChild(document.createElement("br"));
+
+                        // Append everything
+                        tooltip.appendChild(rootDiv);
+                        tooltip.appendChild(tooltipText);
+
+                        document.getElementById("results").appendChild(tooltip);
+                    }
+                }
+
+                // Display in HTML
+            }
+
+            catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results').innerText = 'Error fetching data. Please try again.';
+
+            }
+
+        }
+        // 1️⃣ Listen for changes in input/output encoding
+        function convertAll() {
+            let inputEnc = document.getElementById("inputEncoding").value;
+            let outputEnc = document.getElementById("outputEncoding").value;
+
+            // Convert main text nodes inside results
+            let resultsDiv = document.getElementById("results");
+            resultsDiv.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    node.textContent = Sanscript.t(node.textContent, inputEnc, outputEnc);
+                }
+            });
+
+            // Convert tooltip words (first div inside tooltip)
+            document.querySelectorAll(".tooltip div:first-child").forEach(wordDiv => {
+                wordDiv.textContent = Sanscript.t(wordDiv.textContent, inputEnc, outputEnc);
+            });
+
+            // Convert tooltip roots
+            document.querySelectorAll(".tooltiptext strong:first-child").forEach(rootDiv => {
+                let text = rootDiv.textContent.replace("Root: ", "");
+                rootDiv.textContent = "Root: " + Sanscript.t(text, inputEnc, outputEnc);
+            });
+
+            // Optional: Convert properties in list
+            document.querySelectorAll(".tooltiptext ul li").forEach(li => {
+                li.textContent = Sanscript.t(li.textContent, inputEnc, outputEnc);
+            });
+        }
+
+    </script>
+</body>
+
+</html>
